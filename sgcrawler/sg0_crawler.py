@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 try:
     from urllib.request import urlopen  #python3
 except ImportError:
-    from urllib2 import urlopen, quote #python2
+    from urllib2 import urlopen, quote , HTTPError #python2
 
 # office
 # style_name
@@ -20,16 +20,26 @@ except ImportError:
 class Crawler(object):
     url = 'http://www.e3ol.com/biography/html/'
     encoding = 'GB2312'
+    errorList = []
 
     def __init__(self, name):
         self.name = name
+        self.has_error = False
         self.get_soup()
 
     def get_soup(self):
         self.url = Crawler.url + quote(self.name)
-        self.data  = urlopen(self.url).read()
-        self.data = self.data.decode(Crawler.encoding, 'ignore')
-        self.soup = BeautifulSoup(self.data, 'html5lib')
+        try:
+            conn = urlopen(self.url)
+            self.data  = conn.read()
+            self.data = self.data.decode(Crawler.encoding, 'ignore')
+            self.soup = BeautifulSoup(self.data, 'lxml')
+            # self.soup = BeautifulSoup(self.data, 'html5lib')
+            conn.close()
+        except HTTPError as e:
+            error_text = '[%s]这个人抓不到' % self.name
+            self.has_error = True
+            Crawler.errorList.append(error_text)
 
     def test_soup(self):
         print self.soup.prettify()
@@ -117,16 +127,24 @@ class Crawler(object):
                 self.assessment = '##'.join(texts).replace('◆', '') # '##'分割每个人的评价
 
     def crawl_all(self):
-        self.crawl_tag1()
-        self.crawl_history_dpt()
-        self.crawl_novel_dpt()
-        self.crawl_assessment()
+        if self.has_error == False:
+            self.crawl_tag1()
+            self.crawl_history_dpt()
+            self.crawl_novel_dpt()
+            self.crawl_assessment()
 
+    def get_profile(self):
+        if self.has_error == False:
+            return (self.name, self.style_name, self.dates, self.native_place, self.history_dpt, self.novel_dpt, self.assessment)
+        else:
+            return tuple()
 
 if __name__ == '__main__':
-    name = '曹操' #曹丕 王越 赵云　貂蝉　司马懿  华雄 曹操
+    name = '奥巴马' #曹丕 王越 赵云　貂蝉　司马懿  华雄 曹操 奥巴马
     crawler = Crawler(name)
     crawler.crawl_all()
+    print crawler.get_profile()
+    print Crawler.errorList[0]
     # print 'name is ', crawler.name
     # print 'native place is ',crawler.native_place
     # print '##'
