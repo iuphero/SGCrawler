@@ -39,6 +39,8 @@ class Crawler(object):
         except HTTPError as e:
             error_text = '[%s]这个人抓不到' % self.name
             self.has_error = True
+            self.assessment = self.novel_dpt = self.history_dpt = self.native_place = self.dates = self.style_name = self.office = ''
+
             Crawler.errorList.append(error_text)
 
     def test_soup(self):
@@ -140,19 +142,19 @@ class Crawler(object):
             return tuple()
 
 if __name__ == '__main__':
-    name = '奥巴马' #曹丕 王越 赵云　貂蝉　司马懿  华雄 曹操 奥巴马
+    name = '管辂' #曹丕 王越 赵云　貂蝉　司马懿  华雄 曹操 奥巴马 桥玄 黄承彦 祢衡 司马徽 许劭 管辂
     crawler = Crawler(name)
     crawler.crawl_all()
-    print crawler.get_profile()
-    print Crawler.errorList[0]
-    # print 'name is ', crawler.name
-    # print 'native place is ',crawler.native_place
-    # print '##'
-    # print crawler.dates
-    # print '##'
-    # print crawler.history_dpt
-    # print '##'
-    # print crawler.novel_dpt
-    # print '##'
-    # print crawler.assessment
+    # print crawler.get_profile()
+    # print Crawler.errorList[0]
+    print 'name is ', crawler.name
+    print 'native place is ',crawler.native_place
+    print '##'
+    print crawler.dates
+    print '##'
+    print crawler.history_dpt
+    print '##'
+    print crawler.novel_dpt
+    print '##'
+    print crawler.assessment
 
