@@ -1,5 +1,8 @@
 # Custom
 test.py
+*.sql
+*.config
+
 .*~
 
 # Byte-compiled / optimized / DLL files
